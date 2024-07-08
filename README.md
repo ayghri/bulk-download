@@ -24,6 +24,7 @@ Monthly data:
     then click on the "History" tab and download the XML file in the "Source"
     field. Save the file as `SSH_monthly.xml`
 
+
 The XML file should contain all the information we will need: file URL, size,
 name, hash... We will retrieve the download links and send them to the
 downloader script.
@@ -62,4 +63,8 @@ aria2p -p 7800
 The script will add `dataset.json` to --target that contains the files
 informations.
 
-./docs/demo.mp4
+
+
+
+
+https://github.com/aghriss/clim_downloader/assets/32200675/ba02a545-eab1-4988-81e8-7f5d8a17b852
