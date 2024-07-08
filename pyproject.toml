@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "clim-downloader"
+version = "0.1.0"
+description = ""
+authors = ["Ayoub Ghriss <ayoub.ghriss@colorado.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = ">=3.10"
+aria2p = "^0.12.0"
+pyperclip = "^1.9.0"
+asciimatics = "^1.15.0"
+pydantic = "^2.8.2"
+tqdm = "^4.66.4"
+
+
+[tool.poetry.scripts]
+clim_download = "clim_downloader.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
