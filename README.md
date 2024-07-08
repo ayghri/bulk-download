@@ -1,17 +1,11 @@
-# Climate Data
+# Climate Models Data Downloader (CESM2/CESM1)
 
-This is a guide on how to download data for CESM1 and CESM2.
+I've created this package to manage downloading the datasets of the climate
+models from the Earth System Grid.
 
-We choose CESM2 and CESM1 from the
-[models index](https://www.earthsystemgrid.org/project.html). For CESM2:
-[dataset](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.output.html)
-
-Monthly data:
-
-| Field      | link                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------ |
-| Ocean      | [link](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.ocn.proc.monthly_ave.html) |
-| Atmosphere | [link](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.atm.proc.monthly_ave.html) |
+Provided as is. It requires >=Python 3.10, but can be used for lower versions if
+dependencies are satisfied, especially
+[aria2p](https://github.com/pawamoy/aria2p).
 
 ## Requirements
 
@@ -23,7 +17,6 @@ Monthly data:
     [monthly average](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.ocn.proc.monthly_ave.SSH.html),
     then click on the "History" tab and download the XML file in the "Source"
     field. Save the file as `SSH_monthly.xml`
-
 
 The XML file should contain all the information we will need: file URL, size,
 name, hash... We will retrieve the download links and send them to the
@@ -38,7 +31,18 @@ pip install git+https://github.com/aghriss/clim_downloader
 Installing the package will provide an executable that call
 `clim_downloader.main:main`
 
-## Usage
+## Usage by example
+
+We choose CESM2 and CESM1 from the
+[models index](https://www.earthsystemgrid.org/project.html). For CESM2:
+[dataset](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.output.html)
+
+Monthly data:
+
+| Field      | link                                                                                       |
+| ---------- | ------------------------------------------------------------------------------------------ |
+| Ocean      | [link](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.ocn.proc.monthly_ave.html) |
+| Atmosphere | [link](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.atm.proc.monthly_ave.html) |
 
 The package will extract the files from the XML file. Some files have multiple
 versions, it will download the most recent one.
@@ -60,11 +64,11 @@ python env):
 aria2p -p 7800
 ```
 
-The script will add `dataset.json` to --target that contains the files
-informations.
+The script will add a `dataset.json` to --target that contains the files
+informations for later use.
 
+**Note**: Some dataset have sizes different from the ones reported on the XML file,
+so some files will always be re-downloaded whenever the script is launched.
 
-
-
-
+## Demo
 https://github.com/aghriss/clim_downloader/assets/32200675/ba02a545-eab1-4988-81e8-7f5d8a17b852
