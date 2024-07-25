@@ -1,4 +1,4 @@
-# Climate Models Data Downloader (CESM2/CESM1)
+# Bulk downloader library (aria2 backend)
 
 I've created this package to manage downloading the datasets of the climate
 models from the Earth System Grid.
@@ -9,66 +9,84 @@ dependencies are satisfied, especially
 
 ## Requirements
 
--   Make sure `aria2` is installed in your system. It is used by the script to
-    manage downloads.
--   Create your account on the gateway then on 'Account Home' retrieve your API
-    Token and save it.
--   Go to the variable's page, for example CESM2 SSH
-    [monthly average](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.ocn.proc.monthly_ave.SSH.html),
-    then click on the "History" tab and download the XML file in the "Source"
-    field. Save the file as `SSH_monthly.xml`
-
-The XML file should contain all the information we will need: file URL, size,
-name, hash... We will retrieve the download links and send them to the
-downloader script.
+-   Ensure that `aria2` is installed on your system, as it is used by the script
+    to manage downloads.
 
 ## Installation
 
 ```
-pip install git+https://github.com/aghriss/clim_downloader
+pip install git+https://github.com/aghriss/bulk-download
 ```
-
-Installing the package will provide an executable that call
-`clim_downloader.main:main`
 
 ## Usage by example
 
-We choose CESM2 and CESM1 from the
-[models index](https://www.earthsystemgrid.org/project.html). For CESM2:
-[dataset](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.output.html)
+The key component for using this library is the `FileInfo` class defined in
+`downloader.py`
 
-Monthly data:
+```python
+from bulk_download.downloader import launch_download
+from bulk_download.downloader import FileInfo
+from bulk_download.downloader import DatasetInfo
 
-| Field      | link                                                                                       |
-| ---------- | ------------------------------------------------------------------------------------------ |
-| Ocean      | [link](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.ocn.proc.monthly_ave.html) |
-| Atmosphere | [link](https://www.earthsystemgrid.org/dataset/ucar.cgd.cesm2le.atm.proc.monthly_ave.html) |
 
-The package will extract the files from the XML file. Some files have multiple
-versions, it will download the most recent one.
+URL = "https://raw.githubusercontent.com/aghriss/bulk-download/master/bulk_download/{url}"
+f1 = FileInfo(name="file1.py", url="downloader.py")
+f2 = FileInfo(name="file2.py", url="utils.py")
+f3 = FileInfo(name="file3.py", url="__init__.py", metadata={"hidden": True})
+dataset = DatasetInfo(files=[f1, f2, f3])
 
-```bash
-export TOKEN="put the token here"
-clim_download --token $TOKEN \
---xml SSH_monthly.xml \
---target ./SSH \
---checksum true \ #use md5 checksum if available
---dry-run false \ #display information without downloading
---port 7800 \ #use different port for aria2 if another instance is running
+# it will save "files_list.json" to target_dir
+launch_download(target_dir="/tmp/bulk_test", url_format=URL, dataset=dataset, port=6800)
+
+# ls /tmp/bulk_test
+## ❯ ls /tmp/bulk_test
+## total 16K
+##    0   120  .
+##    0   860  ..
+## 8.0K  6.5K  file1.py
+## 4.0K  1.8K  file2.py
+##    0     0  file3.py
+## 4.0K   431  files_list.json
 ```
 
-To monitor the download speed and progress you can call (from within the same
-python env):
+We can provide a `locate_files_func` to specify the sub-path of `target_dir` for
+each file:
 
+```python
+
+URL = "https://raw.githubusercontent.com/aghriss/bulk-download/master/bulk_download/{url}"
+f1 = FileInfo(name="file1.py", url="downloader.py")
+f2 = FileInfo(name="file2.py", url="utils.py")
+f3 = FileInfo(name="file3.py", url="__init__.py", metadata={"hidden": True})
+dataset = DatasetInfo(files=[f1, f2, f3])
+
+
+# let's say we want to put the files in subfolders depending on their type
+def locate_file(f: FileInfo):
+    if f.metadata.get("hidden", False):
+        return f".sub/{f.name}"
+    return f"main/{f.name}"
+
+
+launch_download(
+    target_dir="/tmp/bulk_test",
+    url_format=URL,
+    dataset=dataset,
+    port=6800,
+    locate_files_func=locate_file,
+)
+
+## ❯ find /tmp/bulk_test -type f -name "*.py"
+## /tmp/bulk_test/main/file1.py
+## /tmp/bulk_test/main/file2.py
+## /tmp/bulk_test/.sub/file3.py
 ```
-aria2p -p 7800
-```
 
-The script will add a `dataset.json` to --target that contains the files
-informations for later use.
-
-**Note**: Some dataset have sizes different from the ones reported on the XML file,
-so some files will always be re-downloaded whenever the script is launched.
+The script will add a `files_list.json` in the `target_dir` that contains the
+file information for later use.
 
 ## Demo
+
+This is a demo that uses the library to download CESM2 data.
+[More details here](docs/cesm_download.md)
 https://github.com/aghriss/clim_downloader/assets/32200675/ba02a545-eab1-4988-81e8-7f5d8a17b852

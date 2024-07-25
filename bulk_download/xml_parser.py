@@ -1,6 +1,6 @@
 from typing import Dict
-from .files import FileInfo
-from .files import DatasetInfo
+from .downloader import FileInfo
+from .downloader import DatasetInfo
 import xml.etree.ElementTree as ET
 import datetime
 
@@ -25,7 +25,7 @@ def get_file_info(file_tree) -> FileInfo:
     properties = get_properties(file_tree)
     file_info = FileInfo(
         name=file_tree.attrib["name"],
-        url_path=file_tree.attrib["urlPath"],
+        url=file_tree.attrib["urlPath"],
         checksum=properties.get("checksum", ""),
         checksum_type=properties.get("checksum_type", ""),
         size=int(properties["size"]),
