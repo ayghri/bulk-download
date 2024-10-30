@@ -2,8 +2,7 @@
 
 ## Requirements
 
--   Make sure `aria2` is installed in your system. It is used by the script to
-    manage downloads.
+-   Make sure `aria2` is installed. It is used by the script to manage downloads.
 -   Create your account on the gateway then on 'Account Home' retrieve your API
     Token and save it.
 -   Go to the variable's page, for example CESM2 SSH
