@@ -1,4 +1,4 @@
-# Bulk downloader library (aria2 backend)
+# Climate Models Bulk downloader library
 
 I've created this package to manage downloading the datasets of the climate
 models from the Earth System Grid.
